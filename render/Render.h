@@ -7,11 +7,12 @@ using namespace sf;
 
 class Render {
 public:
+	~Render();
 	RenderWindow* window = nullptr;
 	void visualize(int mass[], int size);
 	void draw(int mass[], int size, int sleepTime);
 	Clock clock;
-	Render();
+	Render(RenderWindow* _window = nullptr);
 };
 
 
