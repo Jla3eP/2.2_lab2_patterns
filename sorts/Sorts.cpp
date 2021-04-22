@@ -15,13 +15,45 @@ bool Sorts::checkSort (int *mass, int size, int a, int b){
 	}
 	
 	mass = nullptr;
-	//delete mass;
 	return 1;
 }
 
+int *Sorts::insertionSort (int *mass, int size, bool __render){
+	
+	for (int k = 1; k < _size; k++) {
+		if (_mass[k] < _mass[0]) {
+			insert(k, 0);
+		}
+		for (int i = 1; i < k; i++) {
+			if (mass[i - 1] < mass[k] && mass[i] > mass[k]) {
+				insert(k, i);
+				
+				if (__render) {
+					this->render->draw(_mass, _size, 20);
+				}
+				operations++;
+				break;
+			}
+		}
+	}
+	
+	return _mass;
+}
+
+void Sorts::insert (int startPos, int endPos){
+	if(startPos > endPos){
+		int sp_elem = _mass[startPos];
+		for (int i = startPos; i >= endPos; i--) {
+			_mass[i] = _mass[i - 1];
+			if (brender) {
+				this->render->draw(_mass, _size, 20);
+			}
+		}
+		_mass[endPos] = sp_elem;
+	}
+}
+
 int *Sorts::bubbleSort (int *mass, int size, bool _render){
-	clock.restart();
-	operations = 0;
 	for (int i = 0; i < size; i++) {
 		for (int j = 0; j < size - 1; j++) {
 			if (mass[j] > mass[j + 1]) {
@@ -42,8 +74,6 @@ int *Sorts::bubbleSort (int *mass, int size, bool _render){
 
 
 int *Sorts::shakerSort (int *mass, int size, bool _render){
-	clock.restart();
-	operations = 0;
 	int begin = 0;
 	int end = size;
 	for (int i = 0; i < size; i++) {
@@ -77,7 +107,7 @@ int Sorts::quickSortMainLogic (int begin, int end, int opNumIter){
 		if (begin < opNumIter && _mass[begin] > _mass[opNumIter]) {
 			std::swap(_mass[begin], _mass[opNumIter]);
 			opNumIter = begin;
-			if (this->_render) {
+			if (this->brender) {
 				this->render->draw(_mass, _size, 2);
 			}
 			operations++;
@@ -90,7 +120,7 @@ int Sorts::quickSortMainLogic (int begin, int end, int opNumIter){
 				std::swap(_mass[opNumIter], _mass[opNumIter + 1]);
 				opNumIter++;
 				end++;
-				if (this->_render) {
+				if (this->brender) {
 					this->render->draw(_mass, _size, 2);
 				}
 				operations++;
@@ -108,7 +138,7 @@ int Sorts::quickSortMainLogic (int begin, int end, int opNumIter){
 int *Sorts::stupidQuickSort (int *mass, const int size, bool nrender){
 	this->_mass = mass;
 	this->_size = size;
-	this->_render = nrender;
+	this->brender = nrender;
 	
 	int opNumIter = size - 1;
 	int begin = 0;
@@ -136,7 +166,7 @@ void Sorts::stupidQuickSort (int opNumIter, int begin, int end){
 int *Sorts::medianQuickSort (int *mass, int size, bool render){
 	_mass = mass;
 	_size = size;
-	this->_render = render;
+	this->brender = render;
 	
 	int opNumIter = findMedian(0, size - 1);
 	int begin = 0;
@@ -150,7 +180,7 @@ int *Sorts::medianQuickSort (int *mass, int size, bool render){
 		medianQuickSort(0, opNumIter);
 	}
 	while (!checkSort(_mass, (size - 1) - (opNumIter + 1) + 1)) {
-		medianQuickSort(opNumIter + 1, size - 1);
+		medianQuickSort(opNumIter + 1, size);
 	}
 	
 	
@@ -227,8 +257,13 @@ void Sorts::checkFuncs (){
 int *Sorts::startSort (int *(Sorts::*sortFunc) (int *, int, bool), int *mass, int size, bool render){
 	clock.restart();
 	operations = 0;
+	brender = render;
+	_mass = mass;
+	_size = size;
 	
-	(this->*sortFunc)(mass, size, render);
+	while(!checkSort(mass, size)) {
+		(this->*sortFunc)(mass, size, render);
+	}
 	
 	time = clock.getElapsedTime().asMilliseconds();
 	clock.restart();
@@ -257,6 +292,7 @@ int *Sorts::startSort (int *(Sorts::*sortFunc) (int *, int, bool), int *mass, in
 Sorts::~Sorts (){
 	delete render;
 }
+
 
 template<>
 vector <int> Sorts::adapter (int *(Sorts::*sortFunc) (int *, int, bool), vector <int> mass, int size, bool render){

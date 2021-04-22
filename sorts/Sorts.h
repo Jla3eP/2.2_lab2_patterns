@@ -19,7 +19,7 @@ public:
 	
 	int *_mass;
 	int _size;
-	bool _render = 0;
+	bool brender = 0;
 	
 	
 	Clock clock;
@@ -31,6 +31,10 @@ public:
 	int *bubbleSort (int *mass, int size, bool render);
 	
 	int *shakerSort (int *mass, int size, bool render);
+	
+	int *insertionSort (int *mass, int size, bool render);
+	
+	void insert(int posA, int posB);
 	
 	int *stupidQuickSort (int *mass, int size, bool render);
 	
