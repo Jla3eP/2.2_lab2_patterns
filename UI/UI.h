@@ -5,7 +5,7 @@
 class UI {
 	Clock clock;
 	RenderWindow* window = nullptr;
-	Sorts sorts;
+	StupidQuickSort sorts;
 	//int* array = nullptr;
 	int arraySize = 720;
 	

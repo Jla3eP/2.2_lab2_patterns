@@ -135,35 +135,83 @@ int Sorts::quickSortMainLogic (int begin, int end, int opNumIter){
 	return opNumIter;
 }
 
-int *Sorts::stupidQuickSort (int *mass, const int size, bool nrender){
-	this->_mass = mass;
-	this->_size = size;
-	this->brender = nrender;
-	
-	int opNumIter = size - 1;
-	int begin = 0;
-	int end = size - 1;
-	
-	quickSortMainLogic(begin, end, opNumIter);
-	
-	while (!checkSort(_mass, size)) {
-		stupidQuickSort(opNumIter - 1, 0, opNumIter);
-		stupidQuickSort(size - 1, opNumIter + 1, size - 1);
-	}
-	
-	return _mass;
-	
+void StupidQuickSort :: sort (int opNumIter, int begin, int end) {
+   quickSortMainLogic(begin, end, opNumIter);
+   while (!checkSort(_mass, end - begin, begin, end)) {
+      sort(opNumIter - 1, begin, opNumIter);
+      sort(_size - 1, opNumIter, end);
+   }
 }
 
-void Sorts::stupidQuickSort (int opNumIter, int begin, int end){
-	quickSortMainLogic(begin, end, opNumIter);
-	while (!checkSort(_mass, end - begin, begin, end)) {
-		stupidQuickSort(opNumIter - 1, begin, opNumIter);
-		stupidQuickSort(_size - 1, opNumIter, end);
-	}
+/*class QuickSort {
+    virtual void sort(int opNumIter, int begin, int end) = 0;
+    virtual int* Sorts::sorting(int *mass, const int size, bool nrender) = 0;
+
+};*/
+
+
+/*class MedianQuickSort : public Sorts
+{
+    void sorting(int opNumIter, int begin, int end) override{
+            _mass = mass;
+            _size = size;
+            this->brender = render;
+
+            int opNumIter = findMedian(0, size - 1);
+            int begin = 0;
+            int end = size - 1;
+
+            opNumIter = quickSortMainLogic(begin, end, opNumIter);
+
+            //while (!checkSort(_mass, size)) {
+
+            while (!checkSort(_mass, opNumIter + 1, 0, opNumIter)) {
+                medianQuickSort(0, opNumIter);
+            }
+            while (!checkSort(_mass, (size - 1) - (opNumIter + 1) + 1)) {
+                medianQuickSort(opNumIter + 1, size);
+            }
+
+
+            return _mass;
+        }
+    int *Sorts::sort (int begin, int end) override{
+        int opNumIter = findMedian(begin, end);
+        quickSortMainLogic(begin, end, opNumIter);
+        while (!checkSort(_mass, end - begin, begin, end)) {
+            //if(!checkSort(_mass, opNumIter - begin + 1, begin, opNumIter))
+            medianQuickSort(begin, opNumIter);
+
+            //if(!checkSort(_mass, end - opNumIter, opNumIter, end))
+            medianQuickSort(opNumIter + 1, end);
+        }
+    }
+
+}
+};
+ */
+
+int* StupidQuickSort :: graphicalSort (int *mass, const int size, bool nrender) {
+    this->_mass = mass;
+    this->_size = size;
+    this->brender = nrender;
+
+    int opNumIter = size - 1;
+    int begin = 0;
+    int end = size - 1;
+
+    quickSortMainLogic(begin, end, opNumIter);
+
+    while (!checkSort(_mass, size)) {
+    sort(opNumIter - 1, 0, opNumIter);
+    sort(size - 1, opNumIter + 1, size - 1);
+    }
+
+    return _mass;
+
 }
 
-int *Sorts::medianQuickSort (int *mass, int size, bool render){
+int* MedianQuickSort :: graphicalSort (int *mass, int size, bool render){
 	_mass = mass;
 	_size = size;
 	this->brender = render;
@@ -177,25 +225,25 @@ int *Sorts::medianQuickSort (int *mass, int size, bool render){
 	//while (!checkSort(_mass, size)) {
 		
 	while (!checkSort(_mass, opNumIter + 1, 0, opNumIter)) {
-		medianQuickSort(0, opNumIter);
+		sort(0, opNumIter);
 	}
 	while (!checkSort(_mass, (size - 1) - (opNumIter + 1) + 1)) {
-		medianQuickSort(opNumIter + 1, size);
+		sort(opNumIter + 1, size);
 	}
 	
 	
 	return _mass;
 }
 
-int *Sorts::medianQuickSort (int begin, int end){
+void MedianQuickSort :: sort (int begin, int end){
 	int opNumIter = findMedian(begin, end);
 	quickSortMainLogic(begin, end, opNumIter);
 	while (!checkSort(_mass, end - begin, begin, end)) {
 		//if(!checkSort(_mass, opNumIter - begin + 1, begin, opNumIter))
-			medianQuickSort(begin, opNumIter);
+			sort(begin, opNumIter);
 		
 		//if(!checkSort(_mass, end - opNumIter, opNumIter, end))
-			medianQuickSort(opNumIter + 1, end);
+			sort(opNumIter + 1, end);
 	}
 }
 
@@ -254,7 +302,7 @@ void Sorts::checkFuncs (){
 	std::cout << findO(sortFunc) << std::endl;
 }
 
-int *Sorts::startSort (int *(Sorts::*sortFunc) (int *, int, bool), int *mass, int size, bool render){
+int *Sorts::startSort (int *mass, int size, bool render){
 	clock.restart();
 	operations = 0;
 	brender = render;
@@ -262,7 +310,7 @@ int *Sorts::startSort (int *(Sorts::*sortFunc) (int *, int, bool), int *mass, in
 	_size = size;
 	
 	while(!checkSort(mass, size)) {
-		(this->*sortFunc)(mass, size, render);
+		graphicalSort(mass, size, render);
 	}
 	
 	time = clock.getElapsedTime().asMilliseconds();
@@ -295,23 +343,23 @@ Sorts::~Sorts (){
 
 
 template<>
-vector <int> Sorts::adapter (int *(Sorts::*sortFunc) (int *, int, bool), vector <int> mass, int size, bool render){
+vector <int> Sorts::adapter ( vector <int> mass, int size, bool render){
 	int *array = new int[mass.size()];
 	std::copy(mass.begin(), mass.end(), array);
-	array = startSort(sortFunc, array, size, render);
+	array = startSort(array, size, render);
 	vector <int> dest(array, array + sizeof(array) / sizeof(array[0]));
 	return dest;
 }
 
 template<>
-list <int> Sorts::adapter (int *(Sorts::*sortFunc) (int *, int, bool), list <int> mass, int size, bool render){
+list <int> Sorts::adapter (list <int> mass, int size, bool render){
 	int *array = new int[mass.size()];
 	//std::copy(mass.begin(), mass.end(), array);
 	int k = 0;
 	for (int const &i: mass) {
 		array[k++] = i;
 	}
-	array = startSort(sortFunc, array, size, render);
+	array = startSort(array, size, render);
 	std::list <int> ints;
 	for (int i = 0; i < size; i++) {
 		ints.push_back(array[i]);
