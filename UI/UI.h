@@ -1,11 +1,16 @@
 #ifndef SORTS_LAB_18_03_21_UI_H
 #define SORTS_LAB_18_03_21_UI_H
-#include "../sorts/Sorts.h"
+//#include "../sorts/Sorts.h"
+#include <string>
+#include "SFML/Graphics.hpp"
+
+using namespace sf;
+using std::string;
 
 class UI {
 	Clock clock;
 	RenderWindow* window = nullptr;
-	Sorts sorts;
+	//Sorts sorts;
 	//int* array = nullptr;
 	int arraySize = 720;
 	

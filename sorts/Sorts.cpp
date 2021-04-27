@@ -1,5 +1,68 @@
-#include <iostream>
 #include "Sorts.h"
+
+
+int *Sorts::startSort (int *mass, int size, bool _render){
+	this->_mass = mass;
+	this->_size = size;
+	this->brender = _render;
+	
+	sort();
+	if(_render){
+		Clock plsWait;
+		while ( plsWait.getElapsedTime().asSeconds() < 1 ) {}
+	}
+	return _mass;
+}
+
+void Sorts::findBigO (){
+	int size = 200;
+	int mass[size];
+	operations = 0;
+	int operations1 = 0;
+	for(int i=0; i < 10 ;i++) {
+		for (int i = 0; i < size; i++) {
+			mass[i] = i;
+		}
+		for (int i = 0; i < size * 5; i++) {
+			std::swap(mass[rand() % size], mass[rand() % size]);
+		}
+		
+		this->_mass = mass;
+		this->_size = size;
+		this->brender = 0;
+		this->sort();
+		operations1 += operations;
+		operations = 0;
+	}
+	size *= 0.5;
+	int mass2[size];
+	int operations2 = 0;
+	for(int i=0; i < 10;i++) {
+		for (int i = 0; i < size; i++) {
+			mass2[i] = i;
+		}
+		for (int i = 0; i < size * 5; i++) {
+			std::swap(mass2[rand() % size], mass2[rand() % size]);
+		}
+		
+		this->_mass = mass2;
+		this->_size = size;
+		sort();
+		operations2 += operations;
+		operations = 0;
+	}
+	if (double(operations1) / operations2 < 2.2 * log2(2.4)) {
+		this->info = "N*log(N)";
+	}
+	else if (double(operations1) / operations2 < 4.2) {
+		this->info = "N^2";
+	}
+	else {
+		this->info = ">N^2";
+	}
+	infoFlag = 0;
+	operations = 0;
+}
 
 bool Sorts::checkSort (int *mass, int size, int a, int b){
 	if (a == -1 && b == -1) {
@@ -18,88 +81,100 @@ bool Sorts::checkSort (int *mass, int size, int a, int b){
 	return 1;
 }
 
-int *Sorts::insertionSort (int *mass, int size, bool __render){
-	
-	for (int k = 1; k < _size; k++) {
-		if (_mass[k] < _mass[0]) {
-			insert(k, 0);
-		}
-		for (int i = 1; i < k; i++) {
-			if (mass[i - 1] < mass[k] && mass[i] > mass[k]) {
-				insert(k, i);
-				
-				if (__render) {
-					this->render->draw(_mass, _size, 20);
-				}
-				operations++;
-				break;
+Sorts::Sorts (Render *_render){
+	this->render = _render;
+}
+
+void bubbleSort::sort (){
+	if(!infoFlag) {
+		info += " bubble sort";
+		infoFlag = 1;
+	}
+	for (int i = 0; i < _size; i++) {
+		for (int j = 0; j < _size - 1; j++) {
+			if (_mass[j] > _mass[j + 1]) {
+				std::swap(_mass[j], _mass[j + 1]);
 			}
+			if (brender) {
+				render->draw(_mass, _size, 80, info);
+			}
+			operations++;
+		}
+		if (checkSort (_mass, _size)) {
+			this->time = clock.getElapsedTime().asMilliseconds();
 		}
 	}
 	
-	return _mass;
 }
 
-void Sorts::insert (int startPos, int endPos){
+void shakerSort::sort (){
+	if(!infoFlag) {
+		info += " shaker sort";
+		infoFlag = 1;
+	}
+	int begin = 0;
+	int end = _size;
+	for (int i = 0; i < _size; i++) {
+		for (int j = begin; j < end; j++) {
+			if (_mass[j] > _mass[j + 1]) {
+				std::swap(_mass[j], _mass[j + 1]);
+			}
+			if (_mass[_size - j] < _mass[_size - (j + 1)]) {
+				std::swap(_mass[_size - j], _mass[_size - (j + 1)]);
+			}
+			if (brender) {
+				this->render->draw(_mass, _size, 30, info);
+			}
+			operations++;
+		}
+		begin++;
+		end--;
+		if (checkSort(_mass, _size)) {
+			time = clock.getElapsedTime().asMilliseconds();
+		}
+	}
+}
+
+void insertionSort::insert (int startPos, int endPos){
 	if(startPos > endPos){
 		int sp_elem = _mass[startPos];
 		for (int i = startPos; i >= endPos; i--) {
+			operations++;
 			_mass[i] = _mass[i - 1];
 			if (brender) {
-				this->render->draw(_mass, _size, 20);
+				this->render->draw(_mass, _size, 40, info);
 			}
 		}
 		_mass[endPos] = sp_elem;
 	}
 }
 
-int *Sorts::bubbleSort (int *mass, int size, bool _render){
-	for (int i = 0; i < size; i++) {
-		for (int j = 0; j < size - 1; j++) {
-			if (mass[j] > mass[j + 1]) {
-				std::swap(mass[j], mass[j + 1]);
-			}
-			if (_render) {
-				this->render->draw(mass, size, 150);
-			}
-			operations++;
+void insertionSort::sort (){
+	if(!infoFlag) {
+		info += " Insertion Sort";
+		infoFlag = 1;
+	}
+	for (int k = 1; k < _size; k++) {
+		if (_mass[k] < _mass[0]) {
+			insert(k, 0);
 		}
-		if (checkSort(mass, size)) {
-			time = clock.getElapsedTime().asMilliseconds();
-			return mass;
+		for (int i = 1; i < k; i++) {
+			if (_mass[i - 1] < _mass[k] && _mass[i] > _mass[k]) {
+				insert(k, i);
+				
+				if (brender) {
+					this->render->draw(_mass, _size, 50, info);
+				}
+				operations++;
+				break;
+			}
 		}
 	}
-	
 }
 
 
-int *Sorts::shakerSort (int *mass, int size, bool _render){
-	int begin = 0;
-	int end = size;
-	for (int i = 0; i < size; i++) {
-		for (int j = begin; j < end; j++) {
-			if (mass[j] > mass[j + 1]) {
-				std::swap(mass[j], mass[j + 1]);
-			}
-			if (mass[size - j] < mass[size - (j + 1)]) {
-				std::swap(mass[size - j], mass[size - (j + 1)]);
-			}
-			if (_render) {
-				this->render->draw(mass, size, 30);
-			}
-			operations++;
-		}
-		begin++;
-		end--;
-		if (checkSort(mass, size)) {
-			time = clock.getElapsedTime().asMilliseconds();
-			return mass;
-		}
-	}
-	
-}
 
-int Sorts::quickSortMainLogic (int begin, int end, int opNumIter){
+int stupidQuickSort::quickSortMainLogic (int begin, int end, int opNumIter){
 	if(begin == end){
 		return opNumIter;
 	}
@@ -108,7 +183,7 @@ int Sorts::quickSortMainLogic (int begin, int end, int opNumIter){
 			std::swap(_mass[begin], _mass[opNumIter]);
 			opNumIter = begin;
 			if (this->brender) {
-				this->render->draw(_mass, _size, 2);
+				this->render->draw(_mass, _size, 2, info);
 			}
 			operations++;
 		}else {
@@ -135,71 +210,34 @@ int Sorts::quickSortMainLogic (int begin, int end, int opNumIter){
 	return opNumIter;
 }
 
-int *Sorts::stupidQuickSort (int *mass, const int size, bool nrender){
-	this->_mass = mass;
-	this->_size = size;
-	this->brender = nrender;
-	
-	int opNumIter = size - 1;
-	int begin = 0;
-	int end = size - 1;
-	
-	quickSortMainLogic(begin, end, opNumIter);
-	
-	while (!checkSort(_mass, size)) {
-		stupidQuickSort(opNumIter - 1, 0, opNumIter);
-		stupidQuickSort(size - 1, opNumIter + 1, size - 1);
+void stupidQuickSort::sort (){
+	if(!infoFlag) {
+		info += " Stupid Quick Sort";
+		infoFlag = 1;
 	}
-	
-	return _mass;
-	
-}
-
-void Sorts::stupidQuickSort (int opNumIter, int begin, int end){
-	quickSortMainLogic(begin, end, opNumIter);
-	while (!checkSort(_mass, end - begin, begin, end)) {
-		stupidQuickSort(opNumIter - 1, begin, opNumIter);
-		stupidQuickSort(_size - 1, opNumIter, end);
-	}
-}
-
-int *Sorts::medianQuickSort (int *mass, int size, bool render){
-	_mass = mass;
-	_size = size;
-	this->brender = render;
-	
-	int opNumIter = findMedian(0, size - 1);
+	int opNumIter = _size - 1;
 	int begin = 0;
-	int end = size - 1;
+	int end = _size - 1;
 	
 	opNumIter = quickSortMainLogic(begin, end, opNumIter);
 	
-	//while (!checkSort(_mass, size)) {
-		
-	while (!checkSort(_mass, opNumIter + 1, 0, opNumIter)) {
-		medianQuickSort(0, opNumIter);
-	}
-	while (!checkSort(_mass, (size - 1) - (opNumIter + 1) + 1)) {
-		medianQuickSort(opNumIter + 1, size);
+	while (!checkSort(_mass, _size)) {
+		quickSort(opNumIter - 1, 0, opNumIter);
+		quickSort(_size - 1, opNumIter + 1, _size - 1);
 	}
 	
-	
-	return _mass;
 }
 
-int *Sorts::medianQuickSort (int begin, int end){
-	int opNumIter = findMedian(begin, end);
+void stupidQuickSort::quickSort (int opNumIter, int begin, int end){
 	quickSortMainLogic(begin, end, opNumIter);
 	while (!checkSort(_mass, end - begin, begin, end)) {
-		//if(!checkSort(_mass, opNumIter - begin + 1, begin, opNumIter))
-			medianQuickSort(begin, opNumIter);
-		
-		//if(!checkSort(_mass, end - opNumIter, opNumIter, end))
-			medianQuickSort(opNumIter + 1, end);
+		quickSort(opNumIter - 1, begin, opNumIter);
+		quickSort(_size - 1, opNumIter, end);
 	}
 }
 
-int Sorts::findMedian (int begin, int end){
+
+int medianQuickSort::findMedian (int begin, int end){
 	if(end == begin){
 		return begin;
 	}
@@ -213,108 +251,35 @@ int Sorts::findMedian (int begin, int end){
 	}
 }
 
-string Sorts::findO (int *(Sorts::*sortFunc) (int *, int, bool)){
-	int size = 720;
-	int mass[size];
-	for (int i = 0; i < size; i++) {
-		mass[i] = i;
+void medianQuickSort::sort (){
+	if (!infoFlag) {
+		info += " Median Quick Sort";
+		infoFlag = 1;
 	}
-	for (int i = 0; i < size * 5; i++) {
-		std::swap(mass[rand() % size], mass[rand() % size]);
+	int opNumIter = findMedian(0, _size - 1);
+	int begin = 0;
+	int end = _size - 1;
+	
+	opNumIter = quickSortMainLogic(begin, end, opNumIter);
+	
+	//while (!checkSort(_mass, _size)) {
+	
+	while (!checkSort(_mass, opNumIter + 1, 0, opNumIter)) {
+		quickSort(0, 0, opNumIter);
 	}
-	
-	(this->*sortFunc)(mass, size, 0);
-	double operations1 = operations;
-	
-	size *= 0.5;
-	int mass2[size];
-	for (int i = 0; i < size; i++) {
-		mass2[i] = i;
+	while (!checkSort(_mass, (_size - 1) - (opNumIter + 1) + 1)) {
+		quickSort(0, opNumIter + 1, _size);
 	}
-	for (int i = 0; i < size * 5; i++) {
-		std::swap(mass2[rand() % size], mass2[rand() % size]);
-	}
-	(this->*sortFunc)(mass2, size, 0);
-	double operations2 = operations;
-	
-	if (operations1 / operations2 < 2.2 * log2(1.5)) {
-		return "N*log(N)";
-	}else if (operations1 / operations2 < 4.2) {
-		return "N^2";
-	}else {
-		return ">N^2";
-	}
-	
-	
 }
 
-void Sorts::checkFuncs (){
-	int *(Sorts::*sortFunc) (int *, int, bool);
-	sortFunc = &Sorts::shakerSort;
-	std::cout << findO(sortFunc) << std::endl;
-}
-
-int *Sorts::startSort (int *(Sorts::*sortFunc) (int *, int, bool), int *mass, int size, bool render){
-	clock.restart();
-	operations = 0;
-	brender = render;
-	_mass = mass;
-	_size = size;
-	
-	while(!checkSort(mass, size)) {
-		(this->*sortFunc)(mass, size, render);
+void medianQuickSort::quickSort (int _opNumIter, int begin, int end){//функція приймає опорний елемент, але не використовує тому-що наслідування
+	int opNumIter = findMedian(begin, end);
+	quickSortMainLogic(begin, end, opNumIter);
+	while (!checkSort(_mass, end - begin, begin, end)) {
+		//if(!checkSort(_mass, opNumIter - begin + 1, begin, opNumIter))
+		quickSort(0, begin, opNumIter);
+		
+		//if(!checkSort(_mass, end - opNumIter, opNumIter, end))
+		quickSort(0, opNumIter + 1, end);
 	}
-	
-	time = clock.getElapsedTime().asMilliseconds();
-	clock.restart();
-	if(render) {
-		while ( clock.getElapsedTime().asSeconds() < 1 ) {}
-	}
-	return mass;
-	
-}
-
-
-/*int *Sorts::podMass (int *mass, int a, int b){
-	if (b >= a) {
-		int *mmass = new int[b - a + 1];
-		int iter = 0;
-		for (int i = a - 1; i < b; i++) {
-			mmass[iter] = mass[i];
-			iter++;
-		}
-		return mmass;
-	}else {
-		return nullptr;
-	}
-}*/
-
-Sorts::~Sorts (){
-	delete render;
-}
-
-
-template<>
-vector <int> Sorts::adapter (int *(Sorts::*sortFunc) (int *, int, bool), vector <int> mass, int size, bool render){
-	int *array = new int[mass.size()];
-	std::copy(mass.begin(), mass.end(), array);
-	array = startSort(sortFunc, array, size, render);
-	vector <int> dest(array, array + sizeof(array) / sizeof(array[0]));
-	return dest;
-}
-
-template<>
-list <int> Sorts::adapter (int *(Sorts::*sortFunc) (int *, int, bool), list <int> mass, int size, bool render){
-	int *array = new int[mass.size()];
-	//std::copy(mass.begin(), mass.end(), array);
-	int k = 0;
-	for (int const &i: mass) {
-		array[k++] = i;
-	}
-	array = startSort(sortFunc, array, size, render);
-	std::list <int> ints;
-	for (int i = 0; i < size; i++) {
-		ints.push_back(array[i]);
-	}
-	return ints;
 }

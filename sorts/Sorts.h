@@ -1,65 +1,70 @@
-#ifndef SORTS_LAB_18_03_21_SORTS_H
-#define SORTS_LAB_18_03_21_SORTS_H
+#ifndef SORTS_SORTS_H
+#define SORTS_SORTS_H
 
-#include "../render/Render.h"
-#include <string>
-#include <vector>
-#include <list>
-#include <iterator>
 #include <cmath>
-
-using std::string;
-using std::vector;
-using std::list;
-using std::iterator;
+#include "../render/Render.h"
 
 class Sorts {
-public:
-	~Sorts ();
-	
-	int *_mass;
+protected:
+	int* _mass;
 	int _size;
-	bool brender = 0;
-	
+	bool brender;
 	
 	Clock clock;
 	float time;
 	int operations = 0;
 	
-	Render *render = new Render;
+	string info = "";
+	bool infoFlag = 0;
 	
-	int *bubbleSort (int *mass, int size, bool render);
+	void findBigO();
 	
-	int *shakerSort (int *mass, int size, bool render);
+	Render* render;
 	
-	int *insertionSort (int *mass, int size, bool render);
+	virtual void sort() = 0;
 	
-	void insert(int posA, int posB);
-	
-	int *stupidQuickSort (int *mass, int size, bool render);
-	
-	int *medianQuickSort(int *mass, int size, bool render);
-	
-	int *medianQuickSort(int begin, int end);
-	
-	int quickSortMainLogic(int begin, int end, int opNumIter);
-	
-	void stupidQuickSort (const int opNumIter, int begin, int end);
-	
-	bool checkSort (int *mass, int size, int a = -1, int b = -1);
-	
-	string findO (int *(Sorts::*sortFunc) (int *, int, bool));
-	
-	int *startSort (int *(Sorts::*sortFunc) (int *, int, bool), int *mass, int size, bool render);//вызов сортировки через указатель на метод, при котором гарантированно не ломается счётчик операций и времени
-	
-	void checkFuncs ();
-	
-	int findMedian(int begin, int end);
-	
-	template <typename T>
-	T adapter(int *(Sorts::*sortFunc) (int *, int, bool), T mass, int size, bool render);
-	
+public:
+	bool checkSort(int* mass, int size, int a = -1, int b = -1);
+	int* startSort(int* mass, int size, bool _render);
+	explicit Sorts(Render* render);
 };
 
 
-#endif //SORTS_LAB_18_03_21_SORTS_H
+class bubbleSort: public Sorts{
+public:
+	void sort()override;
+	bubbleSort(Render* render): Sorts(render){	findBigO();}
+};
+
+class shakerSort: public Sorts{
+public:
+	void sort()override;
+	shakerSort(Render* render): Sorts(render){	findBigO();}
+};
+
+
+class insertionSort: public Sorts{
+	void insert(int posA, int posB);
+public:
+	void sort()override;
+	insertionSort(Render* render): Sorts(render){	findBigO();}
+};
+
+class stupidQuickSort: public Sorts{
+protected:
+	int quickSortMainLogic(int begin ,int end, int opNumIter);
+	virtual void quickSort(int opNumIter, int begin, int end);
+public:
+	void sort()override;
+	explicit stupidQuickSort(Render* render, bool median = 0):
+			Sorts(render){if (!median) {findBigO();}}
+};
+
+class medianQuickSort: public stupidQuickSort{
+	int findMedian(int begin, int end);
+	void quickSort(int opNumIter, int begin, int end)override;
+public:
+	void sort()override;
+	explicit medianQuickSort(Render* render): stupidQuickSort(render, true){	findBigO();}
+};
+#endif //SORTS_SORTS_H
