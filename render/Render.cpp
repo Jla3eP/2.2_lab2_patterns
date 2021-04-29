@@ -1,5 +1,7 @@
 #include "Render.h"
 
+bool Render::doesItExist = 0;
+Render* Render::renderPtr = nullptr;
 
 void Render::visualize (int mass[], int size, int redElemIndex, bool greenField){
 	if (window == nullptr) {
@@ -29,13 +31,18 @@ void Render::visualize (int mass[], int size, int redElemIndex, bool greenField)
 		window->draw(element);
 	}
 	Text infoText(info ,font, infoSize);
-	infoText.setPosition(/*double(this->window->getSize().x / 2 - 250)*/0, double(this->window->getSize().y) - infoSize);
+	infoText.setPosition(/*double(this->window->getSize().x / 2 - 250)*/5, double(this->window->getSize().y) - infoSize - 5);
+	infoText.setFillColor(Color(255,0,0,255));
+	
 	window->draw(infoText);
 	window->display();
 	clock.restart();
 }
 
 Render::Render (RenderWindow* _window){
+
+	renderPtr = this;
+	doesItExist = 1;
 	this->window = _window;
 	font.loadFromFile("../20647.ttf");
 	//this->window->setFramerateLimit(60);
@@ -56,6 +63,8 @@ Render::~Render (){
 		window->close();
 		delete window;
 	}
+	doesItExist = 0;
+	renderPtr = nullptr;
 }
 
 void Render::finalDraw (int *mass, int size){
@@ -68,4 +77,13 @@ void Render::finalDraw (int *mass, int size){
 		}
 	}
 	
+}
+
+Render *Render::createRender (){
+	if(doesItExist){
+		return renderPtr;
+	}
+	else{
+		return new Render;
+	}
 }

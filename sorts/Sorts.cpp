@@ -1,6 +1,6 @@
 #include "Sorts.h"
 
-Render* Sorts::render = new Render();
+Render* Sorts::render = Render::createRender();
 
 int *Sorts::startSort (int *mass, int size, bool _render){
 	this->_mass = mass;

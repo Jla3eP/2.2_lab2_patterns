@@ -13,13 +13,17 @@ class Render {
 	string info = "test";
 	int infoSize = 50;
 	Font font;
+	Render(RenderWindow* _window = nullptr);
+	static Render* renderPtr;
+	static bool doesItExist;
 public:
+	static Render* createRender();
 	~Render();
 	void finalDraw(int mass[], int size);
 	void draw(int mass[], int size, int sleepTime, int redElemIndex, string info = "");
 	Clock clock;
-	Render(RenderWindow* _window = nullptr);
 };
+
 
 
 #endif //SORTS_LAB_18_03_21_RENDER_H
