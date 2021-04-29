@@ -1,5 +1,6 @@
 #include "Sorts.h"
 
+Render* Sorts::render = new Render();
 
 int *Sorts::startSort (int *mass, int size, bool _render){
 	this->_mass = mass;
@@ -9,7 +10,7 @@ int *Sorts::startSort (int *mass, int size, bool _render){
 	sort();
 	if(_render){
 		Clock plsWait;
-		while ( plsWait.getElapsedTime().asSeconds() < 1 ) {}
+		while ( plsWait.getElapsedTime().asMilliseconds() < 750 ) {}
 	}
 	return _mass;
 }
@@ -52,13 +53,13 @@ void Sorts::findBigO (){
 		operations = 0;
 	}
 	if (double(operations1) / operations2 < 2.2 * log2(2.4)) {
-		this->info = "N*log(N)";
+		this->info = "n*log(n)";
 	}
 	else if (double(operations1) / operations2 < 4.2) {
-		this->info = "N^2";
+		this->info = "n^2";
 	}
 	else {
-		this->info = ">N^2";
+		this->info = ">n^2";
 	}
 	infoFlag = 0;
 	operations = 0;
@@ -81,8 +82,8 @@ bool Sorts::checkSort (int *mass, int size, int a, int b){
 	return 1;
 }
 
-Sorts::Sorts (Render *_render){
-	this->render = _render;
+Sorts::Sorts (){
+
 }
 
 void bubbleSort::sort (){
@@ -94,14 +95,18 @@ void bubbleSort::sort (){
 		for (int j = 0; j < _size - 1; j++) {
 			if (_mass[j] > _mass[j + 1]) {
 				std::swap(_mass[j], _mass[j + 1]);
-			}
-			if (brender) {
-				render->draw(_mass, _size, 80, info);
+				if (brender) {
+					render->draw(_mass, _size, 50, j, info);
+				}
 			}
 			operations++;
 		}
 		if (checkSort (_mass, _size)) {
+			if (brender && checkSort(_mass, _size)) {
+				render->finalDraw(_mass, _size);
+			}
 			this->time = clock.getElapsedTime().asMilliseconds();
+			return;
 		}
 	}
 	
@@ -118,19 +123,27 @@ void shakerSort::sort (){
 		for (int j = begin; j < end; j++) {
 			if (_mass[j] > _mass[j + 1]) {
 				std::swap(_mass[j], _mass[j + 1]);
+				if (brender) {
+					this->render->draw(_mass, _size, 50, j + 1, info);
+				}
+				operations++;
 			}
 			if (_mass[_size - j] < _mass[_size - (j + 1)]) {
 				std::swap(_mass[_size - j], _mass[_size - (j + 1)]);
+				if (brender) {
+					this->render->draw(_mass, _size, 50, _size - j - 1, info);
+				}
+				operations++;
 			}
-			if (brender) {
-				this->render->draw(_mass, _size, 30, info);
-			}
-			operations++;
 		}
 		begin++;
 		end--;
-		if (checkSort(_mass, _size)) {
+		if (checkSort(_mass, _size) || begin == end) {
+			if (brender && checkSort(_mass, _size)) {
+				render->finalDraw(_mass, _size);
+			}
 			time = clock.getElapsedTime().asMilliseconds();
+			return;
 		}
 	}
 }
@@ -142,7 +155,7 @@ void insertionSort::insert (int startPos, int endPos){
 			operations++;
 			_mass[i] = _mass[i - 1];
 			if (brender) {
-				this->render->draw(_mass, _size, 40, info);
+				this->render->draw(_mass, _size, 60, endPos, info);
 			}
 		}
 		_mass[endPos] = sp_elem;
@@ -163,18 +176,22 @@ void insertionSort::sort (){
 				insert(k, i);
 				
 				if (brender) {
-					this->render->draw(_mass, _size, 50, info);
+					this->render->draw(_mass, _size, 50, k, info);
 				}
 				operations++;
 				break;
 			}
 		}
 	}
+	if (brender && checkSort(_mass, _size)) {
+		render->finalDraw(_mass, _size);
+		return;
+	}
 }
 
 
 
-int stupidQuickSort::quickSortMainLogic (int begin, int end, int opNumIter){
+int simpleQuickSort::quickSortMainLogic (int begin, int end, int opNumIter){
 	if(begin == end){
 		return opNumIter;
 	}
@@ -183,7 +200,7 @@ int stupidQuickSort::quickSortMainLogic (int begin, int end, int opNumIter){
 			std::swap(_mass[begin], _mass[opNumIter]);
 			opNumIter = begin;
 			if (this->brender) {
-				this->render->draw(_mass, _size, 2, info);
+				this->render->draw(_mass, _size, 2, opNumIter, info);
 			}
 			operations++;
 		}else {
@@ -196,7 +213,7 @@ int stupidQuickSort::quickSortMainLogic (int begin, int end, int opNumIter){
 				opNumIter++;
 				end++;
 				if (this->brender) {
-					this->render->draw(_mass, _size, 2);
+					this->render->draw(_mass, _size, 2, opNumIter);
 				}
 				operations++;
 			}else {
@@ -210,9 +227,9 @@ int stupidQuickSort::quickSortMainLogic (int begin, int end, int opNumIter){
 	return opNumIter;
 }
 
-void stupidQuickSort::sort (){
+void simpleQuickSort::sort (){
 	if(!infoFlag) {
-		info += " Stupid Quick Sort";
+		info += " Simple Quick Sort";
 		infoFlag = 1;
 	}
 	int opNumIter = _size - 1;
@@ -226,9 +243,13 @@ void stupidQuickSort::sort (){
 		quickSort(_size - 1, opNumIter + 1, _size - 1);
 	}
 	
+	if (brender && checkSort(_mass, _size)) {
+		render->finalDraw(_mass, _size);
+		return;
+	}
 }
 
-void stupidQuickSort::quickSort (int opNumIter, int begin, int end){
+void simpleQuickSort::quickSort (int opNumIter, int begin, int end){
 	quickSortMainLogic(begin, end, opNumIter);
 	while (!checkSort(_mass, end - begin, begin, end)) {
 		quickSort(opNumIter - 1, begin, opNumIter);
@@ -269,6 +290,11 @@ void medianQuickSort::sort (){
 	}
 	while (!checkSort(_mass, (_size - 1) - (opNumIter + 1) + 1)) {
 		quickSort(0, opNumIter + 1, _size);
+	}
+	
+	if (brender && checkSort(_mass, _size)) {
+		render->finalDraw(_mass, _size);
+		return;
 	}
 }
 

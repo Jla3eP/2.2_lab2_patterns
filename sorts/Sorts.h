@@ -4,6 +4,8 @@
 #include <cmath>
 #include "../render/Render.h"
 
+
+
 class Sorts {
 protected:
 	int* _mass;
@@ -19,27 +21,26 @@ protected:
 	
 	void findBigO();
 	
-	Render* render;
-	
 	virtual void sort() = 0;
 	
 public:
+	static Render* render;
 	bool checkSort(int* mass, int size, int a = -1, int b = -1);
 	int* startSort(int* mass, int size, bool _render);
-	explicit Sorts(Render* render);
+	Sorts();
 };
 
 
 class bubbleSort: public Sorts{
 public:
 	void sort()override;
-	bubbleSort(Render* render): Sorts(render){	findBigO();}
+	bubbleSort(): Sorts(){	findBigO();}
 };
 
 class shakerSort: public Sorts{
 public:
 	void sort()override;
-	shakerSort(Render* render): Sorts(render){	findBigO();}
+	shakerSort(): Sorts(){	findBigO();}
 };
 
 
@@ -47,24 +48,25 @@ class insertionSort: public Sorts{
 	void insert(int posA, int posB);
 public:
 	void sort()override;
-	insertionSort(Render* render): Sorts(render){	findBigO();}
+	insertionSort(): Sorts(){	findBigO();}
 };
 
-class stupidQuickSort: public Sorts{
+class simpleQuickSort:public Sorts{
 protected:
 	int quickSortMainLogic(int begin ,int end, int opNumIter);
 	virtual void quickSort(int opNumIter, int begin, int end);
 public:
 	void sort()override;
-	explicit stupidQuickSort(Render* render, bool median = 0):
-			Sorts(render){if (!median) {findBigO();}}
+	explicit simpleQuickSort(bool median = 0): Sorts(){if (!median) {findBigO();}}
 };
 
-class medianQuickSort: public stupidQuickSort{
+class medianQuickSort: public simpleQuickSort{
 	int findMedian(int begin, int end);
 	void quickSort(int opNumIter, int begin, int end)override;
 public:
 	void sort()override;
-	explicit medianQuickSort(Render* render): stupidQuickSort(render, true){	findBigO();}
+	explicit medianQuickSort(): simpleQuickSort(true){	findBigO();}
 };
+
+
 #endif //SORTS_SORTS_H
