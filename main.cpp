@@ -1,36 +1,43 @@
-#include <iostream>
 #include "UI/UI.h"
+#include "sorts/Strategy.h"
 
 int main (){
-	
-	
 	srand(time(NULL));
-	Sorts sorts;
+	Strategy* strategy = new Strategy;
+	//Render* render = new Render;
 	
-	for (int i = 19; i < 40; i++) {
-		int size = 720;
-		int mass[size];
-		
-		for (int i = 0; i < size; i++) {
-			mass[i] = i;
+	Sorts* sqs = new stupidQuickSort;
+	Sorts* mqs = new medianQuickSort;
+	Sorts* bs = new bubbleSort;
+	Sorts* ss = new shakerSort;
+	Sorts* is = new insertionSort;
+	int size = 720;
+	int mass[size];
+	for (int i = 0; i < 50; i++) {
+		for (int j = 0; j < size; j++) {
+			mass[j] = j;
 		}
 		
-		for (int i = 0; i < size * 5; i++) {
+		for (int j = 0; j < size * 5; j++) {
 			std::swap(mass[rand() % size], mass[rand() % size]);
 		}
 		
-		sorts.startSort(&Sorts::medianQuickSort, mass, size, 1);
-		
-		//sorts._mass = mass;
-		//std::cout<<sorts.findMedian(0, size-1)<<std::endl;
-		
-		//sorts.adapter(&Sorts::shakerSort, mass, size, 1);
+		strategy->sort(bs, mass, size, 1);
+		for (int j = 0; j < size * 5; j++) {
+			std::swap(mass[rand() % size], mass[rand() % size]);
+		}
+		strategy->sort(ss, mass, size, 1);
+		for (int j = 0; j < size * 5; j++) {
+			std::swap(mass[rand() % size], mass[rand() % size]);
+		}
+		strategy->sort(is, mass, size, 1);
+		for (int j = 0; j < size * 5; j++) {
+			std::swap(mass[rand() % size], mass[rand() % size]);
+		}
+		strategy->sort(sqs, mass, size, 1);
+		for (int j = 0; j < size * 5; j++) {
+			std::swap(mass[rand() % size], mass[rand() % size]);
+		}
+		strategy->sort(mqs, mass, size, 1);
 	}
-	//UI ui;
-	
-	
-	//sorts.checkFuncs();
-	//Sorts sorts;
-	//std::cout << sorts.findO(&Sorts::stupidQuickSort);
-	
 }
