@@ -53,13 +53,13 @@ void Sorts::findBigO (){
 		operations = 0;
 	}
 	if (double(operations1) / operations2 < 2.2 * log2(2.4)) {
-		this->info = "n*log(n)";
+		this->info = "N*log(N)";
 	}
 	else if (double(operations1) / operations2 < 4.2) {
-		this->info = "n^2";
+		this->info = "N^2";
 	}
 	else {
-		this->info = ">n^2";
+		this->info = ">N^2";
 	}
 	infoFlag = 0;
 	operations = 0;
@@ -88,7 +88,7 @@ Sorts::Sorts (){
 
 void bubbleSort::sort (){
 	if(!infoFlag) {
-		info += " bubble sort";
+		info += " Bubble Sort";
 		infoFlag = 1;
 	}
 	for (int i = 0; i < _size; i++) {
@@ -114,7 +114,7 @@ void bubbleSort::sort (){
 
 void shakerSort::sort (){
 	if(!infoFlag) {
-		info += " shaker sort";
+		info += " Shaker Sort";
 		infoFlag = 1;
 	}
 	int begin = 0;

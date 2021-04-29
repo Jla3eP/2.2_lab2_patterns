@@ -37,7 +37,7 @@ void Render::visualize (int mass[], int size, int redElemIndex, bool greenField)
 
 Render::Render (RenderWindow* _window){
 	this->window = _window;
-	font.loadFromFile("../justicehalf.ttf");
+	font.loadFromFile("../20647.ttf");
 	//this->window->setFramerateLimit(60);
 }
 
