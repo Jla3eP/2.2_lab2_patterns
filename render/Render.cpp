@@ -70,12 +70,13 @@ Render::~Render (){
 void Render::finalDraw (int *mass, int size){
 	float sleepTime = float(500) / size;
 	int currentLastGreenIndex = 1;
-	while(currentLastGreenIndex <= size){
+	do{
 		if(clock.getElapsedTime().asMilliseconds() >= sleepTime){
+			currentLastGreenIndex += 2;
 			visualize(mass, size, currentLastGreenIndex, 1);
-			currentLastGreenIndex++;
 		}
-	}
+	}while(currentLastGreenIndex <= size);
+	
 	
 }
 

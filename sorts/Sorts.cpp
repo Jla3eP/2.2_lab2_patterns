@@ -85,9 +85,10 @@ bool Sorts::doesArraySorted (int *array, int size, int a, int b){
 	return 1;
 }
 
-Sorts::Sorts (){
-
+void Sorts::clearOperationsCounter (){
+	this->operations = 0;
 }
+
 
 void bubbleSort::sort (){
 	if(!infoFlag) {
@@ -99,7 +100,7 @@ void bubbleSort::sort (){
 			if (_array[j] > _array[j + 1]) {
 				std::swap(_array[j], _array[j + 1]);
 				if (brender) {
-					render->draw(_array, _size, 80, j, info);
+					render->draw(_array, _size, 200, j, info + "   " + std::to_string(operations));
 				}
 				operations++;
 			}
@@ -127,14 +128,14 @@ void shakerSort::sort (){
 			if (_array[j] > _array[j + 1]) {
 				std::swap(_array[j], _array[j + 1]);
 				if (brender) {
-					this->render->draw(_array, _size, 50, j + 1, info);
+					this->render->draw(_array, _size, 140, j + 1, info + "   " + std::to_string(operations));
 				}
 				operations++;
 			}
 			if (_array[_size - j] < _array[_size - (j + 1)]) {
 				std::swap(_array[_size - j], _array[_size - (j + 1)]);
 				if (brender) {
-					this->render->draw(_array, _size, 50, _size - j - 1, info);
+					this->render->draw(_array, _size, 140, _size - j - 1, info + "   " + std::to_string(operations));
 				}
 				operations++;
 			}
@@ -158,7 +159,7 @@ void insertionSort::insert (int startPos, int endPos){
 			operations++;
 			_array[i] = _array[i - 1];
 			if (brender) {
-				this->render->draw(_array, _size, 60, endPos, info);
+				this->render->draw(_array, _size, 140, endPos, info + "   " + std::to_string(operations));
 			}
 		}
 		_array[endPos] = sp_elem;
@@ -179,7 +180,7 @@ void insertionSort::sort (){
 				insert(k, i);
 				
 				if (brender) {
-					this->render->draw(_array, _size, 50, k, info);
+					this->render->draw(_array, _size, 140, k, info + "   " + std::to_string(operations));
 				}
 				operations++;
 				break;
@@ -203,7 +204,7 @@ int simpleQuickSort::quickSortMainLogic (int begin, int end, int opNumIter){
 			std::swap(_array[begin], _array[opNumIter]);
 			opNumIter = begin;
 			if (this->brender) {
-				this->render->draw(_array, _size, 2, opNumIter, info);
+				this->render->draw(_array, _size, 5, opNumIter, info + "   " + std::to_string(operations));
 			}
 			operations++;
 		}else {
@@ -216,7 +217,7 @@ int simpleQuickSort::quickSortMainLogic (int begin, int end, int opNumIter){
 				opNumIter++;
 				end++;
 				if (this->brender) {
-					this->render->draw(_array, _size, 2, opNumIter);
+					this->render->draw(_array, _size, 5, opNumIter, info + "   " + std::to_string(operations));
 				}
 				operations++;
 			}else {
@@ -286,8 +287,6 @@ void medianQuickSort::sort (){
 	
 	opNumIter = quickSortMainLogic(begin, end, opNumIter);
 	
-	//while (!doesArraySorted(_array, _size)) {
-	
 	while (!doesArraySorted(_array, opNumIter + 1, 0, opNumIter)) {
 		quickSort(0, 0, opNumIter);
 	}
@@ -305,10 +304,7 @@ void medianQuickSort::quickSort (int _opNumIter, int begin, int end){//функ�
 	int opNumIter = findMedian(begin, end);
 	quickSortMainLogic(begin, end, opNumIter);
 	while (!doesArraySorted(_array, end - begin, begin, end)) {
-		//if(!doesArraySorted(_array, opNumIter - begin + 1, begin, opNumIter))
 		quickSort(0, begin, opNumIter);
-		
-		//if(!doesArraySorted(_array, end - opNumIter, opNumIter, end))
 		quickSort(0, opNumIter + 1, end);
 	}
 }

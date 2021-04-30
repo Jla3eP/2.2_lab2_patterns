@@ -24,6 +24,7 @@ int *Strategy::sort (int strategy, int *mass, int size, bool _render){
 		while ( !sortsPtrs[strategy]->doesArraySorted(mass, size)) {
 			mass = sortsPtrs[strategy]->startSort(mass, size, _render);
 		}
+		sortsPtrs[strategy]->clearOperationsCounter();
 		return mass;
 	}
 }

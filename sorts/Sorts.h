@@ -29,7 +29,7 @@ public:
 	
 	int *startSort (int *array, int size, bool _render);
 	
-	Sorts ();
+	void clearOperationsCounter();
 };
 
 

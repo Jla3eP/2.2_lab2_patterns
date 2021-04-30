@@ -1,16 +1,9 @@
 #include "UI/UI.h"
 #include "sorts/Strategy.h"
 
+
 int main (){
 	srand(time(NULL));
-	//Strategy* strategy = new Strategy;
-	//Render* render = new Render;
-	
-	/*Sorts* sqs = new simpleQuickSort;
-	Sorts* mqs = new medianQuickSort;
-	Sorts* bs = new bubbleSort;
-	Sorts* ss = new shakerSort;
-	Sorts* is = new insertionSort;*/
 	int size = 720;
 	int mass[size];
 	for (int i = 0; i < 50; i++) {
