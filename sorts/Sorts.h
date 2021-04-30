@@ -5,10 +5,9 @@
 #include "../render/Render.h"
 
 
-
 class Sorts {
 protected:
-	int* _mass;
+	int *_array;
 	int _size;
 	bool brender;
 	
@@ -19,54 +18,66 @@ protected:
 	string info = "";
 	bool infoFlag = 0;
 	
-	void findBigO();
+	void findBigO ();
 	
-	virtual void sort() = 0;
+	virtual void sort () = 0;
+
+public:
+	static Render *render;
 	
-public:
-	static Render* render;
-	bool checkSort(int* mass, int size, int a = -1, int b = -1);
-	int* startSort(int* mass, int size, bool _render);
-	Sorts();
+	bool doesArraySorted (int *array, int size, int a = -1, int b = -1);
+	
+	int *startSort (int *array, int size, bool _render);
+	
+	Sorts ();
 };
 
 
-class bubbleSort: public Sorts{
+class bubbleSort:public Sorts {
 public:
-	void sort()override;
-	bubbleSort(): Sorts(){	findBigO();}
+	void sort () override;
+	
+	bubbleSort () : Sorts(){findBigO();}
 };
 
-class shakerSort: public Sorts{
+class shakerSort:public Sorts {
 public:
-	void sort()override;
-	shakerSort(): Sorts(){	findBigO();}
+	void sort () override;
+	
+	shakerSort () : Sorts(){findBigO();}
 };
 
 
-class insertionSort: public Sorts{
-	void insert(int posA, int posB);
+class insertionSort:public Sorts {
+	void insert (int posA, int posB);
+
 public:
-	void sort()override;
-	insertionSort(): Sorts(){	findBigO();}
+	void sort () override;
+	
+	insertionSort () : Sorts(){findBigO();}
 };
 
-class simpleQuickSort:public Sorts{
+class simpleQuickSort:public Sorts {
 protected:
-	int quickSortMainLogic(int begin ,int end, int opNumIter);
-	virtual void quickSort(int opNumIter, int begin, int end);
+	int quickSortMainLogic (int begin, int end, int opNumIter);
+	
+	virtual void quickSort (int opNumIter, int begin, int end);
+
 public:
-	void sort()override;
-	explicit simpleQuickSort(bool median = 0): Sorts(){if (!median) {findBigO();}}
+	void sort () override;
+	
+	explicit simpleQuickSort (bool median = 0) : Sorts(){if (!median) {findBigO();}}
 };
 
-class medianQuickSort: public simpleQuickSort{
-	int findMedian(int begin, int end);
-	void quickSort(int opNumIter, int begin, int end)override;
-public:
-	void sort()override;
-	explicit medianQuickSort(): simpleQuickSort(true){	findBigO();}
-};
+class medianQuickSort:public simpleQuickSort {
+	int findMedian (int begin, int end);
+	
+	void quickSort (int opNumIter, int begin, int end) override;
 
+public:
+	void sort () override;
+	
+	explicit medianQuickSort () : simpleQuickSort(true){findBigO();}
+};
 
 #endif //SORTS_SORTS_H

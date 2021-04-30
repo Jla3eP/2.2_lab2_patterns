@@ -2,10 +2,13 @@
 #define SORTS_STRATEGY_H
 #include "Sorts.h"
 
+
+using std::map;
+
 class Strategy {
 	
-	static std::map<int, Sorts*> sortsPtrs;
-	static std::map<int, Sorts*> getSortsPtrs();
+	static map<int, Sorts*> sortsPtrs;
+	static void setSortsPtrs();
 public:
 	enum{
 		BubbleSort,

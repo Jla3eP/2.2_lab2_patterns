@@ -10,7 +10,7 @@ using namespace sf;
 class Render {
 	RenderWindow* window = nullptr;
 	void visualize(int mass[], int size, int redElemIndex, bool greenField = 0);
-	string info = "test";
+	string info = "";
 	int infoSize = 50;
 	Font font;
 	Render(RenderWindow* _window = nullptr);
