@@ -1,6 +1,6 @@
 #include "UI/UI.h"
 #include "sorts/Strategy.h"
-#include <time.h>
+
 
 int main (){
 	srand(time(NULL));
@@ -15,22 +15,22 @@ int main (){
 			std::swap(mass[rand() % size], mass[rand() % size]);
 		}
 		
-		Strategy::sort(Strategy::BubbleSort, mass, size, 1);
+		Strategy::sort(0, mass, size, 1);
 		for (int j = 0; j < size * 5; j++) {
 			std::swap(mass[rand() % size], mass[rand() % size]);
 		}
-		Strategy::sort(Strategy::ShakerSort, mass, size, 1);
+		Strategy::sort(1, mass, size, 1);
 		for (int j = 0; j < size * 5; j++) {
 			std::swap(mass[rand() % size], mass[rand() % size]);
 		}
-		Strategy::sort(Strategy::InsertionSort, mass, size, 1);
+		Strategy::sort(2, mass, size, 1);
 		for (int j = 0; j < size * 5; j++) {
 			std::swap(mass[rand() % size], mass[rand() % size]);
 		}
-		Strategy::sort(Strategy::StupidQuickSort, mass, size, 1);
+		Strategy::sort(3, mass, size, 1);
 		for (int j = 0; j < size * 5; j++) {
 			std::swap(mass[rand() % size], mass[rand() % size]);
 		}
-		Strategy::sort(Strategy::MedianQuickSort, mass, size, 1);
+		Strategy::sort(4, mass, size, 1);
 	}
 }
