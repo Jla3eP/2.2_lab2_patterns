@@ -3,7 +3,9 @@
 
 
 int main (){
-	srand(time(NULL));
+	
+	UI ui;
+	/*srand(time(NULL));
 	int size = 720;
 	int mass[size];
 	for (int i = 0; i < 50; i++) {
@@ -32,5 +34,5 @@ int main (){
 			std::swap(mass[rand() % size], mass[rand() % size]);
 		}
 		Strategy::sort(4, mass, size, 1);
-	}
+	}*/
 }

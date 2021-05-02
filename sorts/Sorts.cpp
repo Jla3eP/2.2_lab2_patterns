@@ -176,13 +176,13 @@ void insertionSort::sort (){
 			insert(k, 0);
 		}
 		for (int i = 1; i < k; i++) {
+			operations++;
 			if (_array[i - 1] < _array[k] && _array[i] > _array[k]) {
 				insert(k, i);
 				
 				if (brender) {
 					this->render->draw(_array, _size, 140, k, info + "   " + std::to_string(operations));
 				}
-				operations++;
 				break;
 			}
 		}

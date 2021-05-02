@@ -88,3 +88,8 @@ Render *Render::createRender (){
 		return new Render;
 	}
 }
+
+void Render::deleteRender (){
+	delete Render::renderPtr;
+	Render::doesItExist = 0;
+}

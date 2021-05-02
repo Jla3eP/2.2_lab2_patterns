@@ -17,6 +17,7 @@ class Render {
 	static Render* renderPtr;
 	static bool doesItExist;
 public:
+	static void deleteRender();
 	static Render* createRender();
 	~Render();
 	void finalDraw(int mass[], int size);

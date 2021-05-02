@@ -2,7 +2,6 @@
 
 
 UI::UI (){
-	
 	font1.loadFromFile("../discoduckchromeital.ttf");
 	font2.loadFromFile("../discoduckcond.ttf");
 	
@@ -10,6 +9,9 @@ UI::UI (){
 	Text *text[size];
 	typedef void (UI::*method) ();
 	method actions[size];
+	
+	window = new RenderWindow(VideoMode(1080, 720), "");
+	voidSize = (window->getSize().y - textSize*size) / (size - 1);
 	
 	text[0] = new Text("Create array", font1, textSize);
 	text[0]->setPosition(0, 0);
@@ -27,12 +29,12 @@ UI::UI (){
 	text[3]->setPosition(0, text[2]->getPosition().y + textSize + voidSize);
 	actions[3] = &UI::exit;
 	
-	window = new RenderWindow(VideoMode(1080, 720), "");
+	
 	while ( window->isOpen()) {
 		if (clock.getElapsedTime().asMilliseconds() < 1000 / 60) {
 			continue;
 		}
-		else{
+		else {
 			clock.restart();
 		}
 		Event event;
@@ -68,15 +70,14 @@ UI::UI (){
 
 void UI::createArray (){
 	string str;
-	Text text("", font2, textSize);
+	
+	Text numText("", font2, textSize);
 	Text exitText("Exit", font2, textSize);
-	
-	
-	//const int size = 4;
 	Text menuText("Enter array size\nAnd press enter", font2, textSize);
+	
 	menuText.setPosition(0, window->getPosition().y / 4);
-	text.setPosition(0, menuText.getPosition().y + textSize * 2);
-	exitText.setPosition(0, text.getPosition().y + textSize);
+	numText.setPosition(0, menuText.getPosition().y + textSize * 2);
+	exitText.setPosition(0, numText.getPosition().y + textSize);
 	
 	Clock enterTimer;
 	
@@ -84,7 +85,7 @@ void UI::createArray (){
 		if (clock.getElapsedTime().asMilliseconds() < 1000 / 60) {
 			continue;
 		}
-		else{
+		else {
 			clock.restart();
 		}
 		Event event;
@@ -102,7 +103,7 @@ void UI::createArray (){
 				break;
 			}
 		}
-		else{
+		else {
 			exitText.setFont(font2);
 		}
 		
@@ -110,40 +111,43 @@ void UI::createArray (){
 		window->draw(menuText);
 		window->draw(exitText);
 		
-		if (event.type == Event::TextEntered)
-		{
-			if (enterTimer.getElapsedTime().asMilliseconds() > 120 )
-			{
-				if(isdigit(static_cast<char>(event.text.unicode)) && str.size() <= 2) {
+		if (event.type == Event::TextEntered) {
+			if (enterTimer.getElapsedTime().asMilliseconds() > 120) {
+				if (isdigit(static_cast<char>(event.text.unicode)) && str.size() <= 2) {
 					str += static_cast<char>(event.text.unicode);
-					text.setString(str);
+					numText.setString(str);
 					enterTimer.restart();
 				}
-				else if(Keyboard::isKeyPressed(Keyboard::BackSpace) && str.size() > 0 && enterTimer.getElapsedTime().asMilliseconds() > 200){
+				else if (Keyboard::isKeyPressed(Keyboard::BackSpace) && str.size() > 0 && enterTimer.getElapsedTime().asMilliseconds() > 200) {
 					str = str.erase(str.size() - 1, 1);
-					text.setString(str);
+					numText.setString(str);
 					enterTimer.restart();
 				}
-				else if(Keyboard::isKeyPressed(Keyboard::BackSpace) && str.size() > 0){
+				else if (Keyboard::isKeyPressed(Keyboard::BackSpace) && str.size() > 0) {
 					this->arraySize = stoi(str);
 					break;
 				}
 			}
 		}
-		window->draw(text);
+		if (Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+			if (!str.empty()) {
+				arraySize = stoi(str);
+			}
+			else {
+				arraySize = DEFAULT;
+			}
+			array = new int[arraySize];
+			for (int i = 0; i < arraySize; i++) {
+				array[i] = i + 1;
+			}
+			for (int j = 0; j < arraySize * 5; j++) {
+				std::swap(array[rand() % arraySize], array[rand() % arraySize]);
+			}
+			break;
+		}
+		window->draw(numText);
 		window->display();
 	}
-	/*if (event.Type == sf::Event::TextEntered && isPassEnter)// ввод текста, нужно оставить только цифры (if с юникодом)
-	{
-		if (event.Text.Unicode < 128)
-		{
-			str += static_cast<char>(event.Text.Unicode);
-			text.SetText(str);
-		}
-	}
-	
-	
-	window.Draw(text);*/
 }
 
 void UI::exit (){
@@ -153,9 +157,105 @@ void UI::exit (){
 }
 
 void UI::start (){
-
+	switch (mode) {
+		case DEMO_MODE: {
+			Strategy::sort(0, array, arraySize, 1);
+			for (int j = 0; j < arraySize * 5; j++) {
+				std::swap(array[rand() % arraySize], array[rand() % arraySize]);
+			}
+			Strategy::sort(1, array, arraySize, 1);
+			for (int j = 0; j < arraySize * 5; j++) {
+				std::swap(array[rand() % arraySize], array[rand() % arraySize]);
+			}
+			Strategy::sort(2, array, arraySize, 1);
+			for (int j = 0; j < arraySize * 5; j++) {
+				std::swap(array[rand() % arraySize], array[rand() % arraySize]);
+			}
+			Strategy::sort(3, array, arraySize, 1);
+			for (int j = 0; j < arraySize * 5; j++) {
+				std::swap(array[rand() % arraySize], array[rand() % arraySize]);
+			}
+			Strategy::sort(4, array, arraySize, 1);
+			break;
+		}
+		case BEST_SORT: {
+			int wrongPosElementsCounter = 0;
+			for(int i = 0; i < arraySize - 1; i++){
+				if(array[i] > array[i + 1]){
+					wrongPosElementsCounter++;
+				}
+			}
+			
+			
+			if(arraySize < 100){
+				Strategy::sort(Strategy::InsertionSort, array, arraySize, 1);
+			}
+			else if(wrongPosElementsCounter < arraySize / 4){
+				Strategy::sort(Strategy::BubbleSort, array, arraySize, 1);
+			}
+			else if(wrongPosElementsCounter < arraySize / 3){
+				Strategy::sort(Strategy::ShakerSort, array, arraySize, 1);
+			}
+			else{
+				if(rand() % 2 == 0){
+					Strategy::sort(Strategy::StupidQuickSort, array, arraySize, 1);
+				}
+				else{
+					Strategy::sort(Strategy::MedianQuickSort, array, arraySize, 1);
+				}
+			}
+			
+			break;
+		}
+		default: {
+			Strategy::sort(mode - 2, array, arraySize, 1);
+			break;
+		}
+	}
+	Render::deleteRender();
 }
 
 void UI::settings (){
+	int listSize = 7;
+	window->create(VideoMode(window->getSize().x, textSize * (listSize + 1)), "");
+	voidSize = (window->getSize().y - textSize * listSize) / (listSize - 1);
+	Text *menuList = new Text[listSize];
+	menuList[0] = Text("Demo Mode", font2, textSize);
+	menuList[1] = Text("Best Sort Func", font2, textSize);
+	menuList[2] = Text("Bubble Sort", font2, textSize);
+	menuList[3] = Text("Shaker Sort", font2, textSize);
+	menuList[4] = Text("Insertion Sort", font2, textSize);
+	menuList[5] = Text("Simple Quick Sort", font2, textSize);
+	menuList[6] = Text("Median Quick Sort", font2, textSize);
+	menuList[0].setPosition(0, 0);
+	for (int i = 1; i < listSize; i++) {
+		menuList[i].setPosition(0,  menuList[i-1].getPosition().y + textSize + voidSize);
+	}
+	
 
+	while ( window->isOpen()) {
+		window->clear();
+		Event event;
+		while ( window->pollEvent(event)) {
+			if (event.type == Event::Closed) {
+				window->close();
+			}
+		}
+		Vector2i pixelPos = Mouse::getPosition(*window);
+		Vector2f pos = window->mapPixelToCoords(pixelPos);
+		for (int i = 0; i < listSize; i++) {
+			menuList[i].setCharacterSize(textSize);
+			if (pos.y >= menuList[i].getPosition().y && pos.y <= menuList[i].getPosition().y + textSize) {
+				menuList[i].setCharacterSize(textSize * 1.2);
+				if (Mouse::isButtonPressed(sf::Mouse::Left)) {
+					mode = i;
+					clock.restart();
+					while (clock.getElapsedTime().asMilliseconds() < 300 ){}
+					return;
+				}
+			}
+			window->draw(menuList[i]);
+		}
+		window->display();
+	}
 }
