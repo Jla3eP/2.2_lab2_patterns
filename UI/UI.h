@@ -21,7 +21,7 @@ class UI {
 		MEDIAN_QUICK_SORT
 	};
 	
-	int mode;
+	int mode = DEMO_MODE;
 	
 	Clock clock;
 	RenderWindow* window = nullptr;

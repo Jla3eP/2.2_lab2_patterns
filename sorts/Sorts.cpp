@@ -89,6 +89,12 @@ void Sorts::clearOperationsCounter (){
 	this->operations = 0;
 }
 
+void Sorts::drawArray (int sleepTime, int redElemIndex, string _info){
+	render = Render::createRender();
+	if (brender) {
+		render->draw(_array, _size, sleepTime, redElemIndex, _info);
+	}
+}
 
 void bubbleSort::sort (){
 	if(!infoFlag) {
@@ -99,9 +105,7 @@ void bubbleSort::sort (){
 		for (int j = 0; j < _size - 1; j++) {
 			if (_array[j] > _array[j + 1]) {
 				std::swap(_array[j], _array[j + 1]);
-				if (brender) {
-					render->draw(_array, _size, 200, j, info + "   " + std::to_string(operations));
-				}
+				drawArray(200, j, info + "   " + std::to_string(operations));
 				operations++;
 			}
 		}
@@ -127,16 +131,12 @@ void shakerSort::sort (){
 		for (int j = begin; j < end; j++) {
 			if (_array[j] > _array[j + 1]) {
 				std::swap(_array[j], _array[j + 1]);
-				if (brender) {
-					this->render->draw(_array, _size, 140, j + 1, info + "   " + std::to_string(operations));
-				}
+				drawArray(140, j + 1, info + "   " + std::to_string(operations));
 				operations++;
 			}
 			if (_array[_size - j] < _array[_size - (j + 1)]) {
 				std::swap(_array[_size - j], _array[_size - (j + 1)]);
-				if (brender) {
-					this->render->draw(_array, _size, 140, _size - j - 1, info + "   " + std::to_string(operations));
-				}
+				drawArray(140, _size - j - 1, info + "   " + std::to_string(operations));
 				operations++;
 			}
 		}
@@ -158,9 +158,7 @@ void insertionSort::insert (int startPos, int endPos){
 		for (int i = startPos; i >= endPos; i--) {
 			operations++;
 			_array[i] = _array[i - 1];
-			if (brender) {
-				this->render->draw(_array, _size, 140, endPos, info + "   " + std::to_string(operations));
-			}
+			drawArray(140, endPos, info + "   " + std::to_string(operations));
 		}
 		_array[endPos] = sp_elem;
 	}
@@ -179,10 +177,7 @@ void insertionSort::sort (){
 			operations++;
 			if (_array[i - 1] < _array[k] && _array[i] > _array[k]) {
 				insert(k, i);
-				
-				if (brender) {
-					this->render->draw(_array, _size, 140, k, info + "   " + std::to_string(operations));
-				}
+				drawArray(140, k, info + "   " + std::to_string(operations));
 				break;
 			}
 		}
@@ -203,9 +198,8 @@ int simpleQuickSort::quickSortMainLogic (int begin, int end, int opNumIter){
 		if (begin < opNumIter && _array[begin] > _array[opNumIter]) {
 			std::swap(_array[begin], _array[opNumIter]);
 			opNumIter = begin;
-			if (this->brender) {
-				this->render->draw(_array, _size, 5, opNumIter, info + "   " + std::to_string(operations));
-			}
+			drawArray(5, opNumIter, info + "   " + std::to_string(operations));
+			
 			operations++;
 		}else {
 			begin++;
@@ -216,9 +210,7 @@ int simpleQuickSort::quickSortMainLogic (int begin, int end, int opNumIter){
 				std::swap(_array[opNumIter], _array[opNumIter + 1]);
 				opNumIter++;
 				end++;
-				if (this->brender) {
-					this->render->draw(_array, _size, 5, opNumIter, info + "   " + std::to_string(operations));
-				}
+				drawArray(5, opNumIter, info + "   " + std::to_string(operations));
 				operations++;
 			}else {
 				end--;

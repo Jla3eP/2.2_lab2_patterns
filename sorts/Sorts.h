@@ -22,6 +22,7 @@ protected:
 	
 	virtual void sort () = 0;
 
+	void drawArray(int sleepTime, int redElemIndex, string _info);
 public:
 	static Render *render;
 	
