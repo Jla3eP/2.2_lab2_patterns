@@ -9,11 +9,10 @@ using std::string;
 
 class UI {
 	enum{
-		DEFAULT = 720
+		DEFAULT = 720//розмір масиву за замовчуванням
 	};
 	enum{
 		DEMO_MODE = 0,
-		BEST_SORT,
 		BUBBLE_SORT,
 		SHAKER_SORT,
 		INSERTION_SORT,
@@ -21,21 +20,18 @@ class UI {
 		MEDIAN_QUICK_SORT
 	};
 	
-	int mode = DEMO_MODE;
+	int mode = DEMO_MODE;//режим роботи за замовчуванням
 	
 	Clock clock;
 	RenderWindow* window = nullptr;
-	//Sorts sorts;
 	int* array;
-	int arraySize = 720;
-	
-	
+	size_t arraySize = 720;
 	
 	Font font1;
 	Font font2;
 	
 	int textSize = 110;
-	int voidSize = 35;
+	int voidSize = 35;//відстань між строками в пікселях
 	
 	void createArray();
 	void start();

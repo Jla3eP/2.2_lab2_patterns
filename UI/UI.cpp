@@ -159,56 +159,43 @@ void UI::exit (){
 void UI::start (){
 	switch (mode) {
 		case DEMO_MODE: {
-			Strategy::sort(0, array, arraySize, 1);
+			Strategy::sort(Strategy::BubbleSort, array, arraySize, 1);
 			for (int j = 0; j < arraySize * 5; j++) {
 				std::swap(array[rand() % arraySize], array[rand() % arraySize]);
 			}
-			Strategy::sort(1, array, arraySize, 1);
+			Strategy::sort(Strategy::ShakerSort, array, arraySize, 1);
 			for (int j = 0; j < arraySize * 5; j++) {
 				std::swap(array[rand() % arraySize], array[rand() % arraySize]);
 			}
-			Strategy::sort(2, array, arraySize, 1);
+			Strategy::sort(Strategy::InsertionSort, array, arraySize, 1);
 			for (int j = 0; j < arraySize * 5; j++) {
 				std::swap(array[rand() % arraySize], array[rand() % arraySize]);
 			}
-			Strategy::sort(3, array, arraySize, 1);
+			Strategy::sort(Strategy::StupidQuickSort, array, arraySize, 1);
 			for (int j = 0; j < arraySize * 5; j++) {
 				std::swap(array[rand() % arraySize], array[rand() % arraySize]);
 			}
-			Strategy::sort(4, array, arraySize, 1);
+			Strategy::sort(Strategy::MedianQuickSort, array, arraySize, 1);
 			break;
 		}
-		case BEST_SORT: {
-			int wrongPosElementsCounter = 0;
-			for(int i = 0; i < arraySize - 1; i++){
-				if(array[i] > array[i + 1]){
-					wrongPosElementsCounter++;
-				}
-			}
-			
-			
-			if(arraySize < 100){
-				Strategy::sort(Strategy::InsertionSort, array, arraySize, 1);
-			}
-			else if(wrongPosElementsCounter < arraySize / 4){
-				Strategy::sort(Strategy::BubbleSort, array, arraySize, 1);
-			}
-			else if(wrongPosElementsCounter < arraySize / 3){
-				Strategy::sort(Strategy::ShakerSort, array, arraySize, 1);
-			}
-			else{
-				if(rand() % 2 == 0){
-					Strategy::sort(Strategy::StupidQuickSort, array, arraySize, 1);
-				}
-				else{
-					Strategy::sort(Strategy::MedianQuickSort, array, arraySize, 1);
-				}
-			}
-			
+		case BUBBLE_SORT: {
+			Strategy::sort(Strategy::BubbleSort, array, arraySize, 1);
 			break;
 		}
-		default: {
-			Strategy::sort(mode - 2, array, arraySize, 1);
+		case SHAKER_SORT: {
+			Strategy::sort(Strategy::ShakerSort, array, arraySize, 1);
+			break;
+		}
+		case INSERTION_SORT: {
+			Strategy::sort(Strategy::InsertionSort, array, arraySize, 1);
+			break;
+		}
+		case SIMPLE_QUICK_SORT: {
+			Strategy::sort(Strategy::StupidQuickSort, array, arraySize, 1);
+			break;
+		}
+		case MEDIAN_QUICK_SORT: {
+			Strategy::sort(Strategy::MedianQuickSort, array, arraySize, 1);
 			break;
 		}
 	}
@@ -216,17 +203,16 @@ void UI::start (){
 }
 
 void UI::settings (){
-	int listSize = 7;
+	int listSize = 6;
 	window->create(VideoMode(window->getSize().x, textSize * (listSize + 1)), "");
 	voidSize = (window->getSize().y - textSize * listSize) / (listSize - 1);
 	Text *menuList = new Text[listSize];
-	menuList[0] = Text("Demo Mode", font2, textSize);
-	menuList[1] = Text("Best Sort Func", font2, textSize);
-	menuList[2] = Text("Bubble Sort", font2, textSize);
-	menuList[3] = Text("Shaker Sort", font2, textSize);
-	menuList[4] = Text("Insertion Sort", font2, textSize);
-	menuList[5] = Text("Simple Quick Sort", font2, textSize);
-	menuList[6] = Text("Median Quick Sort", font2, textSize);
+	menuList[DEMO_MODE] = Text("Demo Mode", font2, textSize);
+	menuList[BUBBLE_SORT] = Text("Bubble Sort", font2, textSize);
+	menuList[SHAKER_SORT] = Text("Shaker Sort", font2, textSize);
+	menuList[INSERTION_SORT] = Text("Insertion Sort", font2, textSize);
+	menuList[SIMPLE_QUICK_SORT] = Text("Simple Quick Sort", font2, textSize);
+	menuList[MEDIAN_QUICK_SORT] = Text("Median Quick Sort", font2, textSize);
 	menuList[0].setPosition(0, 0);
 	for (int i = 1; i < listSize; i++) {
 		menuList[i].setPosition(0,  menuList[i-1].getPosition().y + textSize + voidSize);

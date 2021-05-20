@@ -6,19 +6,26 @@
 using std::map;
 
 class Strategy {
-	
-	static map<int, Sorts*> sortsPtrs;
-	static void setSortsPtrs();
 public:
-	enum{
+	enum Strats{
 		BubbleSort,
 		ShakerSort,
 		InsertionSort,
 		StupidQuickSort,
 		MedianQuickSort
 	};
-	static int* sort (Sorts* sortsPtr,  int*& mass, int size, bool _render);
-	static int* sort(int strategy, int*& mass, int size, bool _render);
+private:
+	/**
+	 * вказівники на об'єкти класів сортувань,
+	 * важливо зберігати їх в одному екземплярі,
+	 * так як в конструкторі викликається функція обчислення асимптотичної складності
+	 */
+	static map<Strats, Sorts*> sortsPtrs;
+	
+	static void initializeSortsPtrs();
+public:
+	static int* sort (Sorts* sortsPtr,  int*& mass, size_t size, bool _render);//альтернативний варіант виклику через існуючий об'єкт
+	static int* sort (Strats strategy, int*& mass, size_t size, bool _render);
 };
 
 

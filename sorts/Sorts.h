@@ -8,17 +8,17 @@
 class Sorts {
 protected:
 	int *_array;
-	int _size;
-	bool brender;
+	size_t _arraySize;
+	bool needVisualise;//1 - необхідна візуалізація, 0 - ні
 	
 	Clock clock;
-	float time;
+	float time;//час, за який відсортується масив
 	int operations = 0;
 	
-	string info = "";
-	bool infoFlag = 0;
+	string info = "";//інформація, яка буде пізніше використовуватись в рендері
+	bool infoFlag = 0;//для запобігання записування інформації декілька разів
 	
-	void findBigO ();
+	void findBigO ();//пошук асимптотичної складності
 	
 	virtual void sort () = 0;
 
@@ -26,9 +26,9 @@ protected:
 public:
 	static Render *render;
 	
-	bool doesArraySorted (int *array, int size, int a = -1, int b = -1);
+	bool doesArraySorted (int *array, size_t size, int a = -1, int b = -1);
 	
-	int *startSort (int *array, int size, bool _render);
+	int *startSort (int *array, size_t size, bool _render);
 	
 	void clearOperationsCounter();
 };

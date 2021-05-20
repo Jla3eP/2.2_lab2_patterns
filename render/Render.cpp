@@ -1,8 +1,12 @@
 #include "Render.h"
 
-bool Render::doesItExist = 0;
 Render* Render::renderPtr = nullptr;
 
+/**
+ * малюємо масив
+ * @param redElemIndex індекс елемента, який необхідно зробити червоним
+ * @param greenField 1 - замалювати поле зеленим до redElemIndex
+ */
 void Render::visualize (int mass[], int size, int redElemIndex, bool greenField){
 	if (window == nullptr) {
 		window = new RenderWindow(VideoMode(1080, 720), "");
@@ -31,7 +35,7 @@ void Render::visualize (int mass[], int size, int redElemIndex, bool greenField)
 		window->draw(element);
 	}
 	Text infoText(info ,font, infoSize);
-	infoText.setPosition(/*double(this->window->getSize().x / 2 - 250)*/5, double(this->window->getSize().y) - infoSize - 5);
+	infoText.setPosition(5, double(this->window->getSize().y) - infoSize - 5);
 	infoText.setFillColor(Color(255,0,0,255));
 	
 	window->draw(infoText);
@@ -40,17 +44,13 @@ void Render::visualize (int mass[], int size, int redElemIndex, bool greenField)
 }
 
 Render::Render (RenderWindow* _window){
-
-	renderPtr = this;
-	doesItExist = 1;
 	this->window = _window;
 	font.loadFromFile("../20647.ttf");
-	//this->window->setFramerateLimit(60);
 }
 
 void Render::draw (int *mass, int size, int sleepTime, int redElemIndex, string _info){
-	int trueSleepTime = (double (size * size) / (1080 * 1080)) * sleepTime;
-	if (clock.getElapsedTime().asMicroseconds() >= trueSleepTime) {
+	int trueSleepTime = (double (size * size) / (1080 * 1080)) * sleepTime;//адаптуємо sleepTime під розмір масива відносно розміру 1080
+	if (clock.getElapsedTime().asMicroseconds() >= trueSleepTime) {//якщо з останньої візуалізації пройшло досить часу, запускаємо visualize
 		if(!_info.empty()){
 			this->info = _info;
 		}
@@ -63,33 +63,32 @@ Render::~Render (){
 		window->close();
 		delete window;
 	}
-	doesItExist = 0;
 	renderPtr = nullptr;
 }
 
 void Render::finalDraw (int *mass, int size){
 	float sleepTime = float(500) / size;
 	int currentLastGreenIndex = 1;
-	do{
+	do{//малюємо зелені лінії доти, доки всі лінії не стануть зеленими
 		if(clock.getElapsedTime().asMilliseconds() >= sleepTime){
 			currentLastGreenIndex += 2;
 			visualize(mass, size, currentLastGreenIndex, 1);
 		}
 	}while(currentLastGreenIndex <= size);
-	
-	
 }
 
-Render *Render::createRender (){
-	if(doesItExist){
+Render *Render::getRender (){//частина реалізації singleton
+	if(renderPtr != nullptr){
 		return renderPtr;
 	}
 	else{
-		return new Render;
+		Render* rnd = new Render;
+		renderPtr = rnd;
+		return rnd;
 	}
 }
 
 void Render::deleteRender (){
 	delete Render::renderPtr;
-	Render::doesItExist = 0;
+	renderPtr = nullptr;
 }

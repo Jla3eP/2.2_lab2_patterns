@@ -1,16 +1,16 @@
 #include "Sorts.h"
 
-Render* Sorts::render = Render::createRender();
+Render* Sorts::render = Render::getRender();
 
-int *Sorts::startSort (int *array, int size, bool _render){
+int *Sorts::startSort (int *array, size_t size, bool _render){
 	this->_array = array;
-	this->_size = size;
-	this->brender = _render;
+	this->_arraySize = size;
+	this->needVisualise = _render;
 	
 	sort();
 	if(_render){
 		render->clock.restart();
-		while ( render->clock.getElapsedTime().asMilliseconds() < 750 ) {}
+		while ( render->clock.getElapsedTime().asMilliseconds() < 750 ) {}//після завершення сортування невелика пауза
 	}
 	return _array;
 }
@@ -20,7 +20,7 @@ void Sorts::findBigO (){
 	int mass[size];
 	operations = 0;
 	int operations1 = 0;
-	for(int i = 0; i < 20 ;i++) {
+	for(int i = 0; i < 20 ;i++) {//20 разів сортуємо масив розміром 10
 		for (int i = 0; i < size; i++) {
 			mass[i] = i;
 		}
@@ -29,16 +29,16 @@ void Sorts::findBigO (){
 		}
 		
 		this->_array = mass;
-		this->_size = size;
-		this->brender = 0;
+		this->_arraySize = size;
+		this->needVisualise = 0;
 		this->sort();
 		operations1 += operations;
 		operations = 0;
 	}
-	size *= 0.5;
+	size *= 0.5;//зменшуємо розмір масива вдвічі
 	int mass2[size];
 	int operations2 = 0;
-	for(int i = 0; i < 20;i++) {
+	for(int i = 0; i < 20;i++) {//повторюємо для масиву нового розміру
 		for (int i = 0; i < size; i++) {
 			mass2[i] = i;
 		}
@@ -47,12 +47,12 @@ void Sorts::findBigO (){
 		}
 		
 		this->_array = mass2;
-		this->_size = size;
+		this->_arraySize = size;
 		sort();
 		operations2 += operations;
 		operations = 0;
 	}
-	if (double(operations1) / operations2 < 2.2 * log2(2.4)) {
+	if (double(operations1) / operations2 < 2.2 * log2(2.4)) {//ураховуючи співвідношення кількості операцій, повертаємо приблизне значення складності
 		this->info = "N log(N) ";
 	}
 	else if (double(operations1) / operations2 < 2.2 * log2(3.3)) {
@@ -68,7 +68,7 @@ void Sorts::findBigO (){
 	operations = 0;
 }
 
-bool Sorts::doesArraySorted (int *array, int size, int a, int b){
+bool Sorts::doesArraySorted (int *array, size_t size, int a, int b){
 	if (a == -1 && b == -1) {
 		a = 0;
 		b = size - 1;
@@ -80,8 +80,6 @@ bool Sorts::doesArraySorted (int *array, int size, int a, int b){
 			}
 		}
 	}
-	
-	array = nullptr;
 	return 1;
 }
 
@@ -90,9 +88,9 @@ void Sorts::clearOperationsCounter (){
 }
 
 void Sorts::drawArray (int sleepTime, int redElemIndex, string _info){
-	render = Render::createRender();
-	if (brender) {
-		render->draw(_array, _size, sleepTime, redElemIndex, _info);
+	render = Render::getRender();
+	if (needVisualise) {
+		render->draw(_array, _arraySize, sleepTime, redElemIndex, _info);
 	}
 }
 
@@ -101,17 +99,17 @@ void bubbleSort::sort (){
 		info += " Bubble Sort";
 		infoFlag = 1;
 	}
-	for (int i = 0; i < _size; i++) {
-		for (int j = 0; j < _size - 1; j++) {
+	for (int i = 0; i < _arraySize; i++) {
+		for (int j = 0; j < _arraySize - 1; j++) {
 			if (_array[j] > _array[j + 1]) {
 				std::swap(_array[j], _array[j + 1]);
 				drawArray(200, j, info + "   " + std::to_string(operations));
 				operations++;
 			}
 		}
-		if (doesArraySorted(_array, _size)) {
-			if (brender && doesArraySorted(_array, _size)) {
-				render->finalDraw(_array, _size);
+		if (doesArraySorted(_array, _arraySize)) {
+			if (needVisualise && doesArraySorted(_array, _arraySize)) {
+				render->finalDraw(_array, _arraySize);
 			}
 			this->time = clock.getElapsedTime().asMilliseconds();
 			return;
@@ -126,25 +124,25 @@ void shakerSort::sort (){
 		infoFlag = 1;
 	}
 	int begin = 0;
-	int end = _size;
-	for (int i = 0; i < _size; i++) {
+	int end = _arraySize;
+	for (int i = 0; i < _arraySize; i++) {
 		for (int j = begin; j < end; j++) {
 			if (_array[j] > _array[j + 1]) {
 				std::swap(_array[j], _array[j + 1]);
 				drawArray(140, j + 1, info + "   " + std::to_string(operations));
 				operations++;
 			}
-			if (_array[_size - j] < _array[_size - (j + 1)]) {
-				std::swap(_array[_size - j], _array[_size - (j + 1)]);
-				drawArray(140, _size - j - 1, info + "   " + std::to_string(operations));
+			if (_array[_arraySize - j] < _array[_arraySize - (j + 1)]) {
+				std::swap(_array[_arraySize - j], _array[_arraySize - (j + 1)]);
+				drawArray(140, _arraySize - j - 1, info + "   " + std::to_string(operations));
 				operations++;
 			}
 		}
 		begin++;
 		end--;
-		if (doesArraySorted(_array, _size) || begin == end) {
-			if (brender && doesArraySorted(_array, _size)) {
-				render->finalDraw(_array, _size);
+		if (doesArraySorted(_array, _arraySize) || begin == end) {
+			if (needVisualise && doesArraySorted(_array, _arraySize)) {
+				render->finalDraw(_array, _arraySize);
 			}
 			time = clock.getElapsedTime().asMilliseconds();
 			return;
@@ -169,7 +167,7 @@ void insertionSort::sort (){
 		info += " Insertion Sort";
 		infoFlag = 1;
 	}
-	for (int k = 1; k < _size; k++) {
+	for (int k = 1; k < _arraySize; k++) {
 		if (_array[k] < _array[0]) {
 			insert(k, 0);
 		}
@@ -182,8 +180,8 @@ void insertionSort::sort (){
 			}
 		}
 	}
-	if (brender && doesArraySorted(_array, _size)) {
-		render->finalDraw(_array, _size);
+	if (needVisualise && doesArraySorted(_array, _arraySize)) {
+		render->finalDraw(_array, _arraySize);
 		return;
 	}
 }
@@ -194,7 +192,7 @@ int simpleQuickSort::quickSortMainLogic (int begin, int end, int opNumIter){
 	if(begin == end){
 		return opNumIter;
 	}
-	for (int i = 0; i <= _size * _size; i++) {
+	for (int i = 0; i <= _arraySize * _arraySize; i++) {
 		if (begin < opNumIter && _array[begin] > _array[opNumIter]) {
 			std::swap(_array[begin], _array[opNumIter]);
 			opNumIter = begin;
@@ -228,19 +226,19 @@ void simpleQuickSort::sort (){
 		info += " Simple Quick Sort";
 		infoFlag = 1;
 	}
-	int opNumIter = _size - 1;
+	int opNumIter = _arraySize - 1;
 	int begin = 0;
-	int end = _size - 1;
+	int end = _arraySize - 1;
 	
 	opNumIter = quickSortMainLogic(begin, end, opNumIter);
 	
-	while (!doesArraySorted(_array, _size)) {
+	while (!doesArraySorted(_array, _arraySize)) {
 		quickSort(opNumIter - 1, 0, opNumIter);
-		quickSort(_size - 1, opNumIter + 1, _size - 1);
+		quickSort(_arraySize - 1, opNumIter + 1, _arraySize - 1);
 	}
 	
-	if (brender && doesArraySorted(_array, _size)) {
-		render->finalDraw(_array, _size);
+	if (needVisualise && doesArraySorted(_array, _arraySize)) {
+		render->finalDraw(_array, _arraySize);
 		return;
 	}
 }
@@ -249,7 +247,7 @@ void simpleQuickSort::quickSort (int opNumIter, int begin, int end){
 	quickSortMainLogic(begin, end, opNumIter);
 	while (!doesArraySorted(_array, end - begin, begin, end)) {
 		quickSort(opNumIter - 1, begin, opNumIter);
-		quickSort(_size - 1, opNumIter, end);
+		quickSort(_arraySize - 1, opNumIter, end);
 	}
 }
 
@@ -273,21 +271,21 @@ void medianQuickSort::sort (){
 		info += " Median Quick Sort";
 		infoFlag = 1;
 	}
-	int opNumIter = findMedian(0, _size - 1);
+	int opNumIter = findMedian(0, _arraySize - 1);
 	int begin = 0;
-	int end = _size - 1;
+	int end = _arraySize - 1;
 	
 	opNumIter = quickSortMainLogic(begin, end, opNumIter);
 	
 	while (!doesArraySorted(_array, opNumIter + 1, 0, opNumIter)) {
 		quickSort(0, 0, opNumIter);
 	}
-	while (!doesArraySorted(_array, (_size - 1) - (opNumIter + 1) + 1)) {
-		quickSort(0, opNumIter + 1, _size);
+	while (!doesArraySorted(_array, (_arraySize - 1) - (opNumIter + 1) + 1)) {
+		quickSort(0, opNumIter + 1, _arraySize);
 	}
 	
-	if (brender && doesArraySorted(_array, _size)) {
-		render->finalDraw(_array, _size);
+	if (needVisualise && doesArraySorted(_array, _arraySize)) {
+		render->finalDraw(_array, _arraySize);
 		return;
 	}
 }
